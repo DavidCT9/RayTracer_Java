@@ -28,13 +28,13 @@ public class Raytracer {
         /*scene02.addLight(new DirectionalLight(new Vector3D(0.0, 0.0, 1.0), Color.WHITE, 0.8));*/
         scene02.addObject(new Sphere(new Vector3D(0.0, 1.0, 5.0), 0.5, Color.RED, 8, 0.5, false));
         scene02.addObject(new Sphere(new Vector3D(0.5, 1.0, 4.5), 0.25, new Color(200, 255, 0), 7.7, 0.0, false));
-        scene02.addObject(new Sphere(new Vector3D(0.35, 1.0, 4.5), 0.3, Color.BLUE, 8.0, 0.9, true));
+        scene02.addObject(new Sphere(new Vector3D(0.8, 1.0, -1), 0.3, Color.BLUE, 8.0, 0.9, true));
         scene02.addObject(new Sphere(new Vector3D(4.85, 1.0, 4.5), 0.3, Color.PINK, 5.0, 0.8, false));
         //scene02.addObject(OBJReader.getModel3D("Cube.obj", new Vector3D(0f, -2.5, 1.0), Color.WHITE, 4.0, 0.3));
         //scene02.addObject(OBJReader.getModel3D("CubeQuad.obj", new Vector3D(-3.0, 0.5, 3.0), Color.GREEN, 9.0, 0.1));
-        scene02.addObject(OBJReader.getModel3D("SmallTeapot.obj", new Vector3D(2.0, -1.0, 1.5), Color.magenta, 2.0, 0.7, true));
+        scene02.addObject(OBJReader.getModel3D("SmallTeapot.obj", new Vector3D(2.0, -1.0, 1.5), Color.magenta, 2.0, 0.8, false));
         //scene02.addObject(OBJReader.getModel3D("Ring.obj", new Vector3D(-2.0, 2.0, 2), Color.ORANGE, 3,0.7));
-        scene02.addObject(OBJReader.getModel3D("Plano.obj", new Vector3D(2.0, -1.0, 1.5), Color.orange, 100.0, 0.3, false));
+        scene02.addObject(OBJReader.getModel3D("Plano.obj", new Vector3D(2.0, -1.0, 1.5), Color.orange, 100.0, 0.5, false));
 
 
         BufferedImage image = raytrace(scene02);
@@ -169,9 +169,10 @@ public class Raytracer {
 
         Intersection reflectionIntersection = raycast(reflectionRay, objects, intersection.getObject(), clippingPlanes);
 
-        if (reflectionIntersection != null && reflectionDepth <= 2 && reflectionIntersection.getObject().getReflectivity() > 0) {
+        if (reflectionIntersection != null && reflectionDepth <= 2 ) {
             reflectionDepth += 1;
-            Color reflectionColor = getSpecularColor(lights, reflectionRay, objects, clippingPlanes, reflectionDepth, reflectionIntersection.getObject());
+            //Color reflectionColor = getSpecularColor(lights, reflectionRay, objects, clippingPlanes, reflectionDepth, reflectionIntersection.getObject());
+            Color reflectionColor = getSpecularColor(lights, reflectionRay, objects, clippingPlanes, reflectionDepth, intersection.getObject());
             double reflectivity = reflectionIntersection.getObject().getReflectivity();
             reflectionColor = new Color(
                     (float) Math.clamp(reflectionColor.getRed() * reflectivity / 255.0, 0.0, 1.0),
@@ -186,8 +187,8 @@ public class Raytracer {
     }
 
     private static Color calculateRefraction(Vector3D incidenceV, double refractionIndex1, Vector3D surfaceNormal,
-                                                double refractionIndex2, Intersection closestIntersection, List<Object3D> objects,
-                                                double[] clippingPlanes, List<Light> lights, int reflectionDepth) {
+                                             double refractionIndex2, Intersection closestIntersection, List<Object3D> objects,
+                                             double[] clippingPlanes, List<Light> lights, int reflectionDepth) {
 
         double eta1 = refractionIndex1, eta2 = refractionIndex2;
         double c1 = Math.clamp(Vector3D.dotProduct(surfaceNormal, incidenceV), -1.0, 1.0);
@@ -206,10 +207,13 @@ public class Raytracer {
         if (k < 0) {
             refractiveV = new Vector3D(0, 0, 0);
         } else {
-            refractiveV =  Vector3D.add(Vector3D.scalarMultiplication(incidenceV, eta), Vector3D.scalarMultiplication(surfaceNormal, eta * c1 - (double) Math.sqrt(k)));
+            refractiveV = Vector3D.add(
+                    Vector3D.scalarMultiplication(incidenceV, eta),
+                    Vector3D.scalarMultiplication(surfaceNormal, eta * c1 - Math.sqrt(k))
+            );
         }
 
-        Vector3D epsilon = Vector3D.scalarMultiplication( surfaceNormal, -1e-8);
+        Vector3D epsilon = Vector3D.scalarMultiplication(surfaceNormal, -1e-8);
         Vector3D rayOrigin = Vector3D.add(epsilon, closestIntersection.getPosition());
 
         Ray refreactiveRay = new Ray(rayOrigin, Vector3D.normalize(refractiveV));
@@ -220,9 +224,13 @@ public class Raytracer {
             refractionObj = refractiveIntersection.getObject();
         } else {
             refractionObj = null;
+            //return Color.BLACK; //RETURN BLACK?
         }
 
-        Color pixelColor = getSpecularColor(lights, refreactiveRay, objects, clippingPlanes, reflectionDepth, refractionObj);
+        //System.out.println("\nObj: " + refractionObj + "\nC1: " + c1 + "\nEta: " + eta + " \nK: " + k + " \nSurface Normal: " + surfaceNormal + "\nRefractiveV: " + refractiveV + "\n");
+
+
+        Color pixelColor = getSpecularColor(lights, refreactiveRay, objects, clippingPlanes, reflectionDepth, closestIntersection.getObject());
         return pixelColor;
 
     }
@@ -231,8 +239,7 @@ public class Raytracer {
     private static Color getSpecularColor(List<Light> lights, Ray ray, List<Object3D> objects,
                                           double[] clippingPlanes, int reflectionDepth, Object3D caster) {
 
-        Intersection closestIntersection = raycast(ray, objects, caster,
-                clippingPlanes);
+        Intersection closestIntersection = raycast(ray, objects, caster, clippingPlanes);
 
         Color pixelColor = Color.BLACK;
         if (closestIntersection != null) {
@@ -248,7 +255,7 @@ public class Raytracer {
                 }
 
                 double objReflectivity = closestIntersection.getObject().getReflectivity();
-                double objOriginalColorRatio = 1 - objReflectivity;
+                double objOriginalColorRatio = Math.clamp(1 - objReflectivity, 0, 1); //CLAMP?
 
                 double nDotL = light.getNDotL(closestIntersection);
                 Color lightColor = light.getColor();
@@ -263,7 +270,6 @@ public class Raytracer {
                 for (int colorIndex = 0; colorIndex < objColors.length; colorIndex++) {
                     objColors[colorIndex] *= intensity * lightColors[colorIndex];
                 }
-
 
                 double shine = calculateShininess(light, closestIntersection, ray);
                 Color specular = new Color(
@@ -287,27 +293,29 @@ public class Raytracer {
                 pixelColor = addColor(pixelColor, specular);
 
                 if (closestIntersection.getObject().isRefractive()) {
-                Color refraColor = calculateRefraction(ray.getDirection(),1,closestIntersection.getNormal(),1.5,
-                        closestIntersection, objects, clippingPlanes, lights, reflectionDepth);
+                    Color refraColor = calculateRefraction(ray.getDirection(), 1.0, closestIntersection.getNormal(), 1.4,
+                            closestIntersection, objects, clippingPlanes, lights, reflectionDepth);
 
                     refraColor = new Color(
                             (float) Math.clamp(refraColor.getRed() * objReflectivity / 255.0, 0.0, 1.0),
                             (float) Math.clamp(refraColor.getGreen() * objReflectivity / 255.0, 0.0, 1.0),
                             (float) Math.clamp(refraColor.getBlue() * objReflectivity / 255.0, 0.0, 1.0));
 
-                    pixelColor = addColor(pixelColor, refraColor);
+                    // IN THEORY, objReflectivity VARIABLE MUST NOT BE THERE
+                    pixelColor = refraColor;
 
 
-                } else if (reflectionDepth < 2) {
-                    Color reflectionColor = calculateReflection(closestIntersection, ray, objects, clippingPlanes, reflectionDepth, Color.BLACK, lights);
-
-                    reflectionColor = new Color(
-                            (float) Math.clamp(reflectionColor.getRed() * objReflectivity / 255.0, 0.0, 1.0),
-                            (float) Math.clamp(reflectionColor.getGreen() * objReflectivity / 255.0, 0.0, 1.0),
-                            (float) Math.clamp(reflectionColor.getBlue() * objReflectivity / 255.0, 0.0, 1.0));
-
-                    pixelColor = addColor(pixelColor, reflectionColor);
                 }
+
+                Color reflectionColor = calculateReflection(closestIntersection, ray, objects, clippingPlanes, reflectionDepth, Color.BLACK, lights);
+
+                reflectionColor = new Color(
+                        (float) Math.clamp(reflectionColor.getRed() * objReflectivity / 255.0, 0.0, 1.0),
+                        (float) Math.clamp(reflectionColor.getGreen() * objReflectivity / 255.0, 0.0, 1.0),
+                        (float) Math.clamp(reflectionColor.getBlue() * objReflectivity / 255.0, 0.0, 1.0));
+
+                pixelColor = addColor(pixelColor, reflectionColor);
+
 
             }
         }
