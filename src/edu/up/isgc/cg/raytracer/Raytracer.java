@@ -261,8 +261,13 @@ public class Raytracer {
                 Color lightColor = light.getColor();
 
                 double intensity = light.getIntensity() * nDotL;
+
+                //Distancia interseccion a la luz
+                double distanceIntersectionLight = Vector3D.calculateDistance(closestIntersection.getPosition(),light.getPosition());
+                if (distanceIntersectionLight<1) distanceIntersectionLight*=-1;
+
                 if (light.getClass().equals(PointLight.class)) {
-                    intensity /= closestIntersection.getDistance();
+                    intensity /= distanceIntersectionLight;
                 }
 
                 double[] lightColors = new double[]{lightColor.getRed() / 255.0, lightColor.getGreen() / 255.0, lightColor.getBlue() / 255.0};

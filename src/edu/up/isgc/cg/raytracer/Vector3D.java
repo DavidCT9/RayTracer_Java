@@ -80,4 +80,11 @@ public class Vector3D {
     public static Vector3D scalarMultiplication(Vector3D vectorA, double scalar){
         return new Vector3D(vectorA.getX() * scalar, vectorA.getY() * scalar, vectorA.getZ() * scalar);
     }
+
+    public static double calculateDistance(Vector3D posA, Vector3D posB){
+        double x = posA.getX() - posB.getX();
+        double y = posA.getY() - posB.getY();
+        double z = posA.getZ() - posB.getZ();
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+    }
 }
