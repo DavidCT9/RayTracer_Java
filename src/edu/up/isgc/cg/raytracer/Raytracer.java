@@ -2,6 +2,7 @@ package edu.up.isgc.cg.raytracer;
 
 import edu.up.isgc.cg.raytracer.lights.Light;
 import edu.up.isgc.cg.raytracer.lights.PointLight;
+import edu.up.isgc.cg.raytracer.lights.SpotLight;
 import edu.up.isgc.cg.raytracer.objects.*;
 import edu.up.isgc.cg.raytracer.tools.OBJReader;
 
@@ -22,9 +23,9 @@ public class Raytracer {
 
         Scene scene02 = new Scene();
         scene02.setCamera(new Camera(new Vector3D(1.5, 1.0, -3), 60, 60, 800, 800, 0.6, 50.0));
-        scene02.addLight(new PointLight(new Vector3D(4.0, 1.0, -4.0), Color.WHITE, 5));
-        scene02.addLight(new PointLight(new Vector3D(1.0, 0.5, 4.0), Color.WHITE, 5));
-
+        //scene02.addLight(new PointLight(new Vector3D(4.0, 1.0, -4.0), Color.WHITE, 5));
+        //scene02.addLight(new PointLight(new Vector3D(1.0, 0.5, 4.0), Color.WHITE, 5));
+        scene02.addLight(new SpotLight(new Vector3D(2, 2.0, 0), Color.white, 7, 40, Vector3D.normalize(new Vector3D(0.0, -0.3, 0.3))));
         /*scene02.addLight(new DirectionalLight(new Vector3D(0.0, 0.0, 1.0), Color.WHITE, 0.8));*/
         scene02.addObject(new Sphere(new Vector3D(0.0, 1.0, 5.0), 0.5, Color.RED, 8, 0.5, false));
         scene02.addObject(new Sphere(new Vector3D(0.5, 1.0, 4.5), 0.25, new Color(200, 255, 0), 7.7, 0.0, false));
@@ -169,7 +170,7 @@ public class Raytracer {
 
         Intersection reflectionIntersection = raycast(reflectionRay, objects, intersection.getObject(), clippingPlanes);
 
-        if (reflectionIntersection != null && reflectionDepth <= 2 ) {
+        if (reflectionIntersection != null && reflectionDepth <= 2) {
             reflectionDepth += 1;
             //Color reflectionColor = getSpecularColor(lights, reflectionRay, objects, clippingPlanes, reflectionDepth, reflectionIntersection.getObject());
             Color reflectionColor = getSpecularColor(lights, reflectionRay, objects, clippingPlanes, reflectionDepth, intersection.getObject());
@@ -263,10 +264,10 @@ public class Raytracer {
                 double intensity = light.getIntensity() * nDotL;
 
                 //Distancia interseccion a la luz
-                double distanceIntersectionLight = Vector3D.calculateDistance(closestIntersection.getPosition(),light.getPosition());
-                if (distanceIntersectionLight<1) distanceIntersectionLight*=-1;
+                double distanceIntersectionLight = Vector3D.calculateDistance(closestIntersection.getPosition(), light.getPosition());
+                if (distanceIntersectionLight < 1) distanceIntersectionLight *= -1;
 
-                if (light.getClass().equals(PointLight.class)) {
+                if (light.getClass().equals(PointLight.class) || light.getClass().equals(SpotLight.class)) {
                     intensity /= distanceIntersectionLight;
                 }
 
