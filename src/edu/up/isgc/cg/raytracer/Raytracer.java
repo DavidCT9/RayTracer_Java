@@ -1,5 +1,6 @@
 package edu.up.isgc.cg.raytracer;
 
+import edu.up.isgc.cg.raytracer.lights.DirectionalLight;
 import edu.up.isgc.cg.raytracer.lights.Light;
 import edu.up.isgc.cg.raytracer.lights.PointLight;
 import edu.up.isgc.cg.raytracer.lights.SpotLight;
@@ -17,29 +18,61 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @Author: David
+ * @Coauthor: Jafet
+ * This class represents a raytracer application.
+ * It generates an image by tracing the paths of rays through a scene and simulating the way they interact with objects and lights.
+ */
 public class Raytracer {
+    /**
+     @Author: David
+     * The main method of the raytracer application.
+     * It initializes the scene, camera, lights, objects, and then generates the image using ray tracing.
+     * Finally, it saves the generated image to a file.
+     * @param args The command-line arguments.
+     */
     public static void main(String[] args) {
         System.out.println(new Date());
 
+        /*
+        Scene scene01 = new Scene();
+        scene01.setCamera(new Camera(new Vector3D(0, 0.5, -3.5), 90, 60, 514, 270, 0.6, 50.0));
+        scene01.addLight(new PointLight(new Vector3D(1.5, 1, -3), Color.WHITE, 4));
+        scene01.addLight(new SpotLight(new Vector3D(3.0, 4.0, -3.0), Color.white, 4, 50, Vector3D.normalize(new Vector3D(0.0, -0.4, 0.3))));
+        scene01.addLight(new SpotLight(new Vector3D(0, 4.0, 0.0), Color.white, 4, 40, Vector3D.normalize(new Vector3D(0.0, -0.4, 0.3))));
+        scene01.addLight(new SpotLight(new Vector3D(-3.0, 4.0, 3.0), Color.white, 4, 50, Vector3D.normalize(new Vector3D(0.0, -0.4, 0.3))));
+
+        scene01.addObject(OBJReader.getModel3D("evolutionScene/SmallTeapot.obj", new Vector3D(-2.5, -1.0, 1.5),  Color.ORANGE, 9.0, 0.2, false));
+        scene01.addObject(OBJReader.getModel3D("evolutionScene/StandfordBunnyOK.obj", new Vector3D(0.0, -1.0, 0), new Color(0, 77, 158), 3.0, 0.8, false));
+        scene01.addObject(OBJReader.getModel3D("evolutionScene/UBC_UP_ToyHorseOK.obj", new Vector3D(-2.75, -1.0, -1.0), Color.magenta, 5.0, 0.6, true));
+        scene01.addObject(OBJReader.getModel3D("evolutionScene/Plano.obj", new Vector3D(2.0, -1.0, 1.5), new Color(50 , 50, 50), 100.0, 0.2, false));
+*/
+
         Scene scene02 = new Scene();
-        scene02.setCamera(new Camera(new Vector3D(1.5, 1.0, -3), 60, 60, 800, 800, 0.6, 50.0));
+        //        scene02.setCamera(new Camera(new Vector3D(1.5, 1.0, -3), 90, 56, 4096, 2160, 0.6, 50.0));
+        scene02.setCamera(new Camera(new Vector3D(0, 2.0, -3), 90, 60, 514, 270, 0.6, 50.0));
         //scene02.addLight(new PointLight(new Vector3D(4.0, 1.0, -4.0), Color.WHITE, 5));
-        //scene02.addLight(new PointLight(new Vector3D(1.0, 0.5, 4.0), Color.WHITE, 5));
-        scene02.addLight(new SpotLight(new Vector3D(2, 2.0, 0), Color.white, 7, 40, Vector3D.normalize(new Vector3D(0.0, -0.3, 0.3))));
-        /*scene02.addLight(new DirectionalLight(new Vector3D(0.0, 0.0, 1.0), Color.WHITE, 0.8));*/
-        scene02.addObject(new Sphere(new Vector3D(0.0, 1.0, 5.0), 0.5, Color.RED, 8, 0.5, false));
-        scene02.addObject(new Sphere(new Vector3D(0.5, 1.0, 4.5), 0.25, new Color(200, 255, 0), 7.7, 0.0, false));
-        scene02.addObject(new Sphere(new Vector3D(0.8, 1.0, -1), 0.3, Color.BLUE, 8.0, 0.9, true));
-        scene02.addObject(new Sphere(new Vector3D(4.85, 1.0, 4.5), 0.3, Color.PINK, 5.0, 0.8, false));
-        //scene02.addObject(OBJReader.getModel3D("Cube.obj", new Vector3D(0f, -2.5, 1.0), Color.WHITE, 4.0, 0.3));
-        //scene02.addObject(OBJReader.getModel3D("CubeQuad.obj", new Vector3D(-3.0, 0.5, 3.0), Color.GREEN, 9.0, 0.1));
-        scene02.addObject(OBJReader.getModel3D("SmallTeapot.obj", new Vector3D(2.0, -1.0, 1.5), Color.magenta, 2.0, 0.8, false));
-        //scene02.addObject(OBJReader.getModel3D("Ring.obj", new Vector3D(-2.0, 2.0, 2), Color.ORANGE, 3,0.7));
-        scene02.addObject(OBJReader.getModel3D("Plano.obj", new Vector3D(2.0, -1.0, 1.5), Color.orange, 100.0, 0.5, false));
+        scene02.addLight(new PointLight(new Vector3D(1.5, 1, -5), Color.WHITE, 4));
+        scene02.addLight(new SpotLight(new Vector3D(4.0, 5.0, -5.0), Color.white, 5, 60, Vector3D.normalize(new Vector3D(0.0, -0.4, 0.3))));
+        scene02.addLight(new SpotLight(new Vector3D(0, 4.0, -5.0), Color.white, 5, 60, Vector3D.normalize(new Vector3D(0.0, -0.4, 0.3))));
+        scene02.addLight(new SpotLight(new Vector3D(-4.0, 4.0, -5.0), Color.white, 5, 60, Vector3D.normalize(new Vector3D(0.0, -0.4, 0.3))));
+        scene02.addLight(new DirectionalLight(new Vector3D(0.0, 1.0, 1.0), Color.WHITE, 0.8));
+        scene02.addObject(new Sphere(new Vector3D(0.0, 1.0, -1), 4, Color.BLUE, 8.0, 0.9, true));
+
+        scene02.addObject(OBJReader.getModel3D("statueScene/jar1.obj", new Vector3D(0, 0, 0),  Color.ORANGE, 9.0, 0.2, false));
+        scene02.addObject(OBJReader.getModel3D("statueScene/jar2.obj", new Vector3D(0.0, 0, 0), new Color(0, 77, 158), 3.0, 0.8, false));
+        scene02.addObject(OBJReader.getModel3D("handScene/hand.obj", new Vector3D(0, 0, 0), Color.magenta, 5.0, 0.6, true));
+        scene02.addObject(OBJReader.getModel3D("handScene/gem.obj", new Vector3D(0, 0, 0), Color.magenta, 5.0, 0.6, true));
+        scene02.addObject(OBJReader.getModel3D("handScene/Wall.obj", new Vector3D(0, 0, 0), Color.magenta, 5.0, 0.6, true));
+
+
+        //scene02.addObject(OBJReader.getModel3D("statueScene/statue.obj", new Vector3D(0, 0, 0), Color.magenta, 5.0, 0.6, true));
+        scene02.addObject(OBJReader.getModel3D("evolutionScene/Plano.obj", new Vector3D(1.0, 1.0, 1.5), new Color(50 , 50, 50), 100.0, 0.2, false));
 
 
         BufferedImage image = raytrace(scene02);
-        File outputImage = new File("image.png");
+        File outputImage = new File("NOW.png");
         try {
             ImageIO.write(image, "png", outputImage);
         } catch (IOException e) {
@@ -48,8 +81,18 @@ public class Raytracer {
         System.out.println(new Date());
     }
 
+    /**
+     * @Author: David
+     * @Coauthor: Jafet
+     * @param scene The scene to be rendered.
+     * @return The generated image.
+     * Generates an image by tracing rays through the scene and calculating the color of each pixel.
+     * Also get the threads available on the machine to parallelize the process.
+     */
     public static BufferedImage raytrace(Scene scene) {
-        ExecutorService executorService = Executors.newFixedThreadPool(6);
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        System.out.println(numThreads);
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
 
         Camera mainCamera = scene.getCamera();
         double[] nearFarPlanes = mainCamera.getNearFarPlanes();
@@ -72,7 +115,7 @@ public class Raytracer {
         executorService.shutdown();
 
         try {
-            if (!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
+            if (!executorService.awaitTermination(10, TimeUnit.HOURS)) {
                 executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
@@ -87,7 +130,20 @@ public class Raytracer {
         return image;
     }
 
-
+    /**
+     * @Author: EduUpTech
+     * @param posRaytrace The array of ray positions.
+     * @param i The row index of the ray position.
+     * @param j The column index of the ray position.
+     * @param cameraPos The position of the camera.
+     * @param mainCamera The main camera of the scene.
+     * @param objects The list of objects in the scene.
+     * @param clippingPlanes The clipping planes for the camera.
+     * @param lights The list of lights in the scene.
+     * @param image The image being generated.
+     * @return A Runnable object representing the task to be executed.
+     * Generates a pixel color by tracing a ray and calculating its interaction with objects and lights in the scene.
+     */
     public static Runnable parallelMethod(Vector3D[][] posRaytrace, int i, int j, Vector3D cameraPos, Camera mainCamera,
                                           List<Object3D> objects, double[] clippingPlanes, List<Light> lights, BufferedImage image) {
 
@@ -112,10 +168,25 @@ public class Raytracer {
 
     }
 
+    /**
+     * @Author: Jafet
+     * @param image The image to set the color.
+     * @param i The row index of the pixel.
+     * @param j The column index of the pixel.
+     * @param color The color to set.
+     * Sets the color of a pixel in the image.
+     */
     private static synchronized void setRBG(BufferedImage image, int i, int j, Color color) {
         image.setRGB(i, j, color.getRGB());
     }
 
+    /**
+     * @Author: Jafet
+     * @param original The original color.
+     * @param otherColor The color to add.
+     * @return The result of adding the two colors.
+     * Adds two colors together.
+     */
     public static Color addColor(Color original, Color otherColor) {
         float red = (float) Math.clamp((original.getRed() / 255.0) + (otherColor.getRed() / 255.0), 0.0, 1.0);
         float green = (float) Math.clamp((original.getGreen() / 255.0) + (otherColor.getGreen() / 255.0), 0.0, 1.0);
@@ -123,6 +194,16 @@ public class Raytracer {
         return new Color(red, green, blue);
     }
 
+    /**
+     * @Author: Jafet
+     * @Coauthor: David
+     * @param ray The ray to be cast.
+     * @param objects The list of objects in the scene.
+     * @param caster The object casting the ray.
+     * @param clippingPlanes The clipping planes for the camera.
+     * @return The closest intersection found.
+     * Casts a ray into the scene and finds the closest intersection with objects.
+     */
     public static Intersection raycast(Ray ray, List<Object3D> objects, Object3D caster, double[] clippingPlanes) {
         Intersection closestIntersection = null;
 
@@ -146,6 +227,14 @@ public class Raytracer {
         return closestIntersection;
     }
 
+    /**
+     * @Author: David
+     * @param lightSource The light source.
+     * @param intersection The intersection point.
+     * @param viewerRay The ray from the viewer.
+     * @return The intensity of the specular reflection.
+     * Calculates the shininess contribution of each light.
+     */
     private static double calculateShininess(Light lightSource, Intersection intersection, Ray viewerRay) {
         Vector3D objNormal = intersection.getNormal();
         Vector3D lightDirection = Vector3D.normalize(Vector3D.substract(intersection.getPosition(), lightSource.getPosition()));
@@ -159,6 +248,18 @@ public class Raytracer {
         return shininess;
     }
 
+    /**
+     * @Author: David
+     * @param intersection The intersection point.
+     * @param viewerRay The ray from the viewer.
+     * @param objects The list of objects in the scene.
+     * @param clippingPlanes The clipping planes for the camera.
+     * @param reflectionDepth The depth of reflection.
+     * @param color The accumulated color.
+     * @param lights The list of lights in the scene.
+     * @return The color of reflection.
+     * Calculates the color of reflection from an intersection point and the bounces between objects.
+     */
     private static Color calculateReflection(Intersection intersection, Ray viewerRay, List<Object3D> objects,
                                              double[] clippingPlanes, int reflectionDepth, Color color,
                                              List<Light> lights) {
@@ -187,6 +288,21 @@ public class Raytracer {
         return color;
     }
 
+    /**
+     * @Author: David
+     * @param incidenceV The incident vector.
+     * @param refractionIndex1 The refractive index of the first medium.
+     * @param surfaceNormal The surface normal.
+     * @param refractionIndex2 The refractive index of the second medium.
+     * @param closestIntersection The closest intersection point.
+     * @param objects The list of objects in the scene.
+     * @param clippingPlanes The clipping planes for the camera.
+     * @param lights The list of lights in the scene.
+     * @param reflectionDepth The depth of reflection.
+     * @return The color of refraction.
+     * Calculates the color of refraction from an intersection point and the redirection of
+     * this ray between refractive objects.
+     */
     private static Color calculateRefraction(Vector3D incidenceV, double refractionIndex1, Vector3D surfaceNormal,
                                              double refractionIndex2, Intersection closestIntersection, List<Object3D> objects,
                                              double[] clippingPlanes, List<Light> lights, int reflectionDepth) {
@@ -220,23 +336,24 @@ public class Raytracer {
         Ray refreactiveRay = new Ray(rayOrigin, Vector3D.normalize(refractiveV));
         Intersection refractiveIntersection = raycast(refreactiveRay, objects, closestIntersection.getObject(), clippingPlanes);
 
-        Object3D refractionObj;
-        if (refractiveIntersection != null) {
-            refractionObj = refractiveIntersection.getObject();
-        } else {
-            refractionObj = null;
-            //return Color.BLACK; //RETURN BLACK?
-        }
-
-        //System.out.println("\nObj: " + refractionObj + "\nC1: " + c1 + "\nEta: " + eta + " \nK: " + k + " \nSurface Normal: " + surfaceNormal + "\nRefractiveV: " + refractiveV + "\n");
-
-
         Color pixelColor = getSpecularColor(lights, refreactiveRay, objects, clippingPlanes, reflectionDepth, closestIntersection.getObject());
         return pixelColor;
 
     }
 
-
+    /**
+     * @Author: EduUpTech
+     * @Coauthor: Jafet
+     * @param lights The list of lights in the scene.
+     * @param ray The ray being cast.
+     * @param objects The list of objects in the scene.
+     * @param clippingPlanes The clipping planes for the camera.
+     * @param reflectionDepth The depth of reflection.
+     * @param caster The object casting the ray, or null if there is no caster.
+     * @return The calculated color of the pixel.
+     * Calculates the color of a pixel based on the intersection of a ray with objects in the scene.
+     * This method considers various factors such as direct lighting, specular reflection, shadows, refraction, and reflection.
+     * */
     private static Color getSpecularColor(List<Light> lights, Ray ray, List<Object3D> objects,
                                           double[] clippingPlanes, int reflectionDepth, Object3D caster) {
 
@@ -252,7 +369,7 @@ public class Raytracer {
                 Intersection shadowIntersection = raycast(shadowray, objects, closestIntersection.getObject(), clippingPlanes);
 
                 if (shadowIntersection != null) {
-                    continue; //Continues to the next light and skip the actual one
+                    continue;
                 }
 
                 double objReflectivity = closestIntersection.getObject().getReflectivity();
@@ -265,7 +382,7 @@ public class Raytracer {
 
                 //Distancia interseccion a la luz
                 double distanceIntersectionLight = Vector3D.calculateDistance(closestIntersection.getPosition(), light.getPosition());
-                if (distanceIntersectionLight < 1) distanceIntersectionLight *= -1;
+                if (distanceIntersectionLight < 1){ distanceIntersectionLight *= -1;}
 
                 if (light.getClass().equals(PointLight.class) || light.getClass().equals(SpotLight.class)) {
                     intensity /= distanceIntersectionLight;
@@ -307,7 +424,6 @@ public class Raytracer {
                             (float) Math.clamp(refraColor.getGreen() * objReflectivity / 255.0, 0.0, 1.0),
                             (float) Math.clamp(refraColor.getBlue() * objReflectivity / 255.0, 0.0, 1.0));
 
-                    // IN THEORY, objReflectivity VARIABLE MUST NOT BE THERE
                     pixelColor = refraColor;
 
 

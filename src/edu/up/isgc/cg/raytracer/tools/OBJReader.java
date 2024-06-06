@@ -23,6 +23,18 @@ import java.util.Map;
  */
 public abstract class OBJReader {
 
+    /**
+     * @Author: Jafet
+     * @param path
+     * @param origin
+     * @param color
+     * @param shininess
+     * @param reflectivity
+     * @param isRefractive
+     * @return Model3D
+     * This masterpiece is the one responsible to process any .obj file and manage all vertex positions
+     * and normals to get the final object positioned correctly.
+     */
     public static Model3D getModel3D(String path, Vector3D origin, Color color, double shininess, double reflectivity, boolean isRefractive) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));

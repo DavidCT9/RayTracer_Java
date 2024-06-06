@@ -18,6 +18,15 @@ public class Barycentric {
     }
 
     // Based on Christer Ericson's Real-Time Collision Detection
+
+    /**
+     * @Author: Jafet
+     * @param point
+     * @param triangle
+     * @return barycentric coordinates
+     * Given a triangle the method calculates the barycentric normal base
+     * on the vertex of the triangle.
+     */
     public static double[] CalculateBarycentricCoordinates(Vector3D point, Triangle triangle) {
         double u, v, w;
         Vector3D[] vertices = triangle.getVertices();
